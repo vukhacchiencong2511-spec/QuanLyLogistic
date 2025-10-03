@@ -1,0 +1,51 @@
+:root{
+  --accent:#0f62fe;
+  --accent-2:#07b39b;
+  --muted:#6b7280;
+  --card-shadow: 0 8px 30px rgba(12,20,60,0.06);
+  --bg:#f6f9ff;
+}
+body{
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: #0b1220;
+}
+.navbar-brand { display:flex; align-items:center; gap:12px; font-weight:700; }
+.logo-box{ width:44px; height:44px; background: linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:800; }
+.nav-link { font-weight:600; color: #fff !important; }
+.hero {
+  background: linear-gradient(90deg, rgba(15,98,254,0.95) 0%, rgba(7,179,155,0.95) 100%);
+  background-size:cover;
+  color: white;
+  border-radius: 12px;
+  padding: 56px 24px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 28px;
+}
+.hero h1{ font-size:36px; line-height:1.05; font-weight:800; }
+.feature-card { border-radius: 12px; padding:20px; background:#fff; box-shadow:var(--card-shadow); }
+.feature-card .bi { font-size:28px; color:var(--accent); }
+.price-card { border-radius:12px; padding:20px; box-shadow:var(--card-shadow); background: #fff; }
+.recommended { border: 2px solid var(--accent); transform: translateY(-8px); }
+.site-footer { background:#0b1220; color:#fff; padding:36px 0; border-radius:12px; margin-top:28px; }
+#dashboard-area { display:none; margin-top:20px; }
+.card-flat { background:#fff; border-radius:12px; padding:16px; box-shadow:var(--card-shadow); }
+.status-badge { padding:6px 10px; border-radius:8px; font-weight:700; font-size:13px; }
+.st-pending { background:#fff7e6; color:#8a5a00; }
+.st-intransit { background:#e6f7ff; color:#054a91; }
+.st-delivered { background:#e6ffef; color:#047a3f; }
+@media (max-width: 900px){
+  .hero h1{ font-size:26px; }
+}
+#appToast { position: fixed; bottom: 20px; right: 20px; z-index: 1200; }
+
+.card-menu {
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+}
+.card-menu:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
