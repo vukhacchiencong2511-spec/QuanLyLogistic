@@ -114,9 +114,9 @@ CREATE TABLE ChungTu (
     MaDon NVARCHAR(100) FOREIGN KEY REFERENCES DonVanChuyen(MaDon) ON DELETE CASCADE,
     NguoiUpload NVARCHAR(100) FOREIGN KEY REFERENCES NguoiDung(MaNguoiDung),
     NgayUpload DATETIME2 DEFAULT SYSDATETIME(),
-    DuongDanAnh NVARCHAR(MAX) NOT NULL,
+    KyNhan NVARCHAR(MAX) NOT NULL,
     DuongDanThuNho NVARCHAR(MAX),
-    Loai NVARCHAR(50) -- 'Anh','ChuKy'
+    LoaiKyNhan NVARCHAR(50) -- 'Anh','ChuKy'
 );
 
 go
@@ -134,6 +134,13 @@ BEGIN
     INNER JOIN inserted i ON dvc.MaDon = i.MaDon;
 END;
 GO
+
+INSERT INTO VaiTro (MaVaiTro, TenVaiTro)
+VALUES 
+('1', N'Admin'),
+('2', N'Tài xế giao hàng'),
+('3', N'Nhân viên'),
+('4', N'Khách hàng');
 
 
 
