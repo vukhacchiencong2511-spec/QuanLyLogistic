@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyLogisticsApi.BUS;
 using QuanLyLogisticsApi.Models;
 
@@ -73,30 +73,21 @@ namespace QuanLyLogisticsApi.Controllers
 
         // ✅ API đăng nhập
         [HttpPost("login")]
-        public IActionResult Login([FromBody] NguoiDung login)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
-            try
-            {
-                var user = _bus.Login(login.TenDangNhap, login.MatKhau);
-                if (user != null)
-                {
-                    return Ok(new
-                    {
-                        message = "Đăng nhập thành công!",
-                        user.MaNguoiDung,
-                        user.HoTen,
-                        user.MaVaiTro
-                    });
-                }
-                else
-                {
-                    return Unauthorized(new { message = "Sai tên đăng nhập hoặc mật khẩu!" });
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var user = _bus.GetByUsername(request.TenDangNhap);
+
+            if (user != null && user.MatKhau == request.MatKhau)
+                return Ok(new { message = "Đăng nhập thành công", user });
+
+            return Unauthorized(new { message = "Sai tên đăng nhập hoặc mật khẩu" });
+        }
+
+        // Tạo class riêng để nhận dữ liệu đăng nhập
+        public class LoginRequest
+        {
+            public string TenDangNhap { get; set; }
+            public string MatKhau { get; set; }
         }
     }
 }
