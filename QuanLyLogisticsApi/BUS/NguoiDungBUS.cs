@@ -1,44 +1,66 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
+using System;
+using System.Collections.Generic;
 
 namespace QuanLyLogisticsApi.BUS
 {
     public class NguoiDungBUS
     {
         private readonly NguoiDungDAL _dal;
+
+        // ✅ Nhận IConfiguration để DAL lấy chuỗi kết nối
         public NguoiDungBUS(IConfiguration config)
         {
             _dal = new NguoiDungDAL(config);
         }
 
-        public List<NguoiDung> GetAll() => _dal.GetAll();
-
-        public bool Add(NguoiDung nd)
+        // ✅ Lấy danh sách toàn bộ người dùng
+        public List<NguoiDung> GetAll()
         {
-            if (string.IsNullOrWhiteSpace(nd.TenDangNhap) || string.IsNullOrWhiteSpace(nd.MatKhau))
-                throw new ArgumentException("Tên đăng nhập và mật khẩu không được trống.");
-            return _dal.Add(nd);
+            return _dal.GetAll();
         }
 
-        public bool Update(NguoiDung nd)
+        // ✅ Thêm người dùng mới
+        public bool Add(NguoiDung n)
         {
-            if (string.IsNullOrEmpty(nd.MaNguoiDung))
-                throw new ArgumentException("Mã người dùng không hợp lệ.");
-            return _dal.Update(nd);
+            if (n == null) return false;
+            return _dal.Add(n);
         }
 
+        // ✅ Cập nhật thông tin người dùng
+        public bool Update(NguoiDung n)
+        {
+            if (n == null) return false;
+            return _dal.Update(n);
+        }
+
+        // ✅ Xóa người dùng
         public bool Delete(string id)
         {
-            if (string.IsNullOrEmpty(id))
-                throw new ArgumentException("Mã người dùng không hợp lệ.");
+            if (string.IsNullOrEmpty(id)) return false;
             return _dal.Delete(id);
         }
 
+        // ✅ Lấy người dùng theo tên đăng nhập (dùng cho login)
+        public NguoiDung GetByUsername(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username)) return null;
+            return _dal.GetByUsername(username.Trim());
+        }
+
+        // ✅ Kiểm tra đăng nhập (login)
         public NguoiDung Login(string username, string password)
         {
-            var user = _dal.GetByUsername(username);
-            if (user == null) return null;
-            return user.MatKhau == password ? user : null;
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                return null;
+
+            var user = _dal.GetByUsername(username.Trim());
+
+            if (user != null && user.MatKhau.Trim() == password.Trim())
+                return user;
+
+            return null;
         }
     }
 }
