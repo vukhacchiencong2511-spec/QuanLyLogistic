@@ -26,9 +26,9 @@ namespace QuanLyLogisticsApi.DAL
                     MaDon = dr["MaDon"].ToString(),
                     NguoiUpload = dr["NguoiUpload"].ToString(),
                     NgayUpload = Convert.ToDateTime(dr["NgayUpload"]),
-                    DuongDanAnh = dr["DuongDanAnh"].ToString(),
+                    KyNhan = dr["KyNhan"].ToString(),
                     DuongDanThuNho = dr["DuongDanThuNho"].ToString(),
-                    Loai = dr["Loai"].ToString()
+                    LoaiKyNhan = dr["LoaiKyNhan"].ToString()
                 });
             }
             return list;
@@ -43,9 +43,9 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@don", c.MaDon);
             cmd.Parameters.AddWithValue("@up", c.NguoiUpload);
             cmd.Parameters.AddWithValue("@ngay", c.NgayUpload);
-            cmd.Parameters.AddWithValue("@anh", c.DuongDanAnh);
+            cmd.Parameters.AddWithValue("@anh", c.KyNhan);
             cmd.Parameters.AddWithValue("@thumb", c.DuongDanThuNho);
-            cmd.Parameters.AddWithValue("@loai", c.Loai);
+            cmd.Parameters.AddWithValue("@loai", c.LoaiKyNhan);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -57,9 +57,9 @@ namespace QuanLyLogisticsApi.DAL
                 SET DuongDanAnh=@anh, DuongDanThuNho=@thumb, Loai=@loai 
                 WHERE MaChungTu=@id", conn);
             cmd.Parameters.AddWithValue("@id", c.MaChungTu);
-            cmd.Parameters.AddWithValue("@anh", c.DuongDanAnh);
+            cmd.Parameters.AddWithValue("@anh", c.KyNhan);
             cmd.Parameters.AddWithValue("@thumb", c.DuongDanThuNho);
-            cmd.Parameters.AddWithValue("@loai", c.Loai);
+            cmd.Parameters.AddWithValue("@loai", c.LoaiKyNhan);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -74,3 +74,4 @@ namespace QuanLyLogisticsApi.DAL
         }
     }
 }
+
