@@ -1,4 +1,4 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.BUS
@@ -33,5 +33,8 @@ namespace QuanLyLogisticsApi.BUS
                 throw new ArgumentException("Mã địa chỉ không hợp lệ.");
             return _dal.Delete(id);
         }
+
+        public DiaChi? GetById(string id) => _dal.GetById(id);
+
     }
 }
