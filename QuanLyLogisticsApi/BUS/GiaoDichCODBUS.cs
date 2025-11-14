@@ -1,89 +1,40 @@
-using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
-using QuanLyLogisticsApi.BUS;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
-namespace QuanLyLogisticsApi.Controllers
+namespace QuanLyLogisticsApi.BUS
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ChungTuController : ControllerBase
+    public class GiaoDichCODBUS
     {
-        private readonly ChungTuBUS _bus;
-
-        public ChungTuController(IConfiguration config)
+        private readonly GiaoDichCODDAL _dal;
+        public GiaoDichCODBUS(IConfiguration config)
         {
-            _bus = new ChungTuBUS(config);
+            _dal = new GiaoDichCODDAL(config);
         }
 
-        [HttpGet]
-        public IActionResult GetAll() => Ok(_bus.GetAll());
+        public List<GiaoDichCOD> GetAll() => _dal.GetAll();
 
-        [HttpPost]
-        public IActionResult Add([FromBody] ChungTu c)
+        public bool Add(GiaoDichCOD g)
         {
-            if (_bus.Add(c))
-                return Ok(new { message = "Thêm chứng từ thành công" });
-            return BadRequest(new { message = "Lỗi khi thêm chứng từ" });
+            if (string.IsNullOrEmpty(g.MaDon))
+                throw new ArgumentException("Mã đơn không được trống.");
+            return _dal.Add(g);
         }
 
-        [HttpPut]
-        public IActionResult Update([FromBody] ChungTu c)
+        public bool Update(GiaoDichCOD g)
         {
-            if (_bus.Update(c))
-                return Ok(new { message = "Cập nhật thành công" });
-            return BadRequest(new { message = "Lỗi khi cập nhật chứng từ" });
+            if (g.MaGiaoDich <= 0)
+                throw new ArgumentException("Mã giao dịch không hợp lệ.");
+            return _dal.Update(g);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public bool Delete(long id)
         {
-            if (_bus.Delete(id))
-                return Ok(new { message = "Xóa thành công" });
-            return BadRequest(new { message = "Lỗi khi xóa chứng từ" });
+            if (id <= 0)
+                throw new ArgumentException("Mã giao dịch không hợp lệ.");
+            return _dal.Delete(id);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(long id)
-        {
-            var result = _bus.GetById(id);
-            if (result == null)
-                return NotFound(new { message = "Không tìm thấy hóa đơn." });
-            return Ok(result);
-        }
+        public GiaoDichCOD? GetById(long id) => _dal.GetById(id);
 
-        [HttpGet("export-excel")]
-        public IActionResult ExportExcel()
-        {
-            using var pkg = new ExcelPackage();
-            var ws = pkg.Workbook.Worksheets.Add("ChungTu");
-
-            ws.Cells[1, 1].Value = "Mã chứng từ";
-            ws.Cells[1, 2].Value = "Mã đơn";
-            ws.Cells[1, 3].Value = "Người upload";
-            ws.Cells[1, 4].Value = "Ngày upload";
-            ws.Cells[1, 5].Value = "Ký nhận";
-            ws.Cells[1, 6].Value = "Đường dẫn ";
-            ws.Cells[1, 7].Value = "Loại ký nhận";
-
-            var list = _bus.GetAll();
-            int r = 2;
-
-            foreach (var x in list)
-            {
-                ws.Cells[r, 1].Value = x.MaChungTu;
-                ws.Cells[r, 2].Value = x.MaDon;
-                ws.Cells[r, 3].Value = x.NguoiUpload;
-                ws.Cells[r, 4].Value = x.NgayUpload;
-                ws.Cells[r, 5].Value = x.KyNhan;
-                ws.Cells[r, 6].Value = x.DuongDanThuNho;
-                ws.Cells[r, 7].Value = x.LoaiKyNhan;
-                r++;
-            }
-
-            return File(pkg.GetAsByteArray(),
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-              "ChungTu.xlsx");
-        }
     }
 }
