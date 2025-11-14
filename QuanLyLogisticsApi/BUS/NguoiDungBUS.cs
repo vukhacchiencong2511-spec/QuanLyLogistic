@@ -62,5 +62,7 @@ namespace QuanLyLogisticsApi.BUS
 
             return null;
         }
+        public NguoiDung GetById(string id) => _dal.GetById(id);
+
     }
 }
