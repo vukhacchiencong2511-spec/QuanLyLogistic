@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using QuanLyLogisticsApi.BUS;
 using QuanLyLogisticsApi.Models;
 
 
 namespace QuanLyLogisticsApi.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class KhachHangController : ControllerBase
     {
         private readonly KhachHangBUS _bus;
@@ -44,12 +47,14 @@ namespace QuanLyLogisticsApi.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] KhachHang kh)
+        [HttpPut]
+        public IActionResult Update([FromBody] KhachHang kh)
         {
             try
             {
-                kh.MaKhachHang = id;
+                if (string.IsNullOrEmpty(kh.MaKhachHang))
+                    return BadRequest(new { error = "Thiếu mã khách hàng." });
+
                 _bus.Update(kh);
                 return Ok(new { message = "Cập nhật thành công!" });
             }
@@ -71,6 +76,36 @@ namespace QuanLyLogisticsApi.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        [HttpGet("export-excel")]
+        public IActionResult ExportExcel()
+        {
+            using var pkg = new ExcelPackage();
+            var ws = pkg.Workbook.Worksheets.Add("KhachHang");
+
+            ws.Cells[1, 1].Value = "Mã khách hàng";
+            ws.Cells[1, 2].Value = "Tên khách hàng";
+            ws.Cells[1, 3].Value = "Số điện thoại";
+            ws.Cells[1, 4].Value = "Email";
+            ws.Cells[1, 5].Value = "Ngày tạo";
+
+            var list = _bus.GetAll();
+            int r = 2;
+
+            foreach (var x in list)
+            {
+                ws.Cells[r, 1].Value = x.MaKhachHang;
+                ws.Cells[r, 2].Value = x.TenKhachHang;
+                ws.Cells[r, 3].Value = x.SoDienThoai;
+                ws.Cells[r, 4].Value = x.Email;
+                ws.Cells[r, 5].Value = x.NgayTao;
+                r++;
+            }
+
+            return File(pkg.GetAsByteArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "KhachHang.xlsx");
         }
     }
 }
