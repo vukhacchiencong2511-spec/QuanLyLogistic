@@ -1,4 +1,4 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.BUS
@@ -22,7 +22,7 @@ namespace QuanLyLogisticsApi.BUS
 
         public bool Update(DiemDung d)
         {
-            if (d.MaDiemDung <= 0)
+            if (string.IsNullOrEmpty(d.MaDiemDung))
                 throw new ArgumentException("Mã điểm dừng không hợp lệ.");
             return _dal.Update(d);
         }
@@ -33,5 +33,8 @@ namespace QuanLyLogisticsApi.BUS
                 throw new ArgumentException("Mã điểm dừng không hợp lệ.");
             return _dal.Delete(id);
         }
+
+        public DiemDung? GetById(string id) => _dal.GetById(id);
+
     }
 }
