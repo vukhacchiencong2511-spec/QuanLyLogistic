@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using QuanLyLogisticsApi.BUS;
 using QuanLyLogisticsApi.Models;
 
@@ -39,6 +40,54 @@ namespace QuanLyLogisticsApi.Controllers
             if (_bus.Delete(id))
                 return Ok(new { message = "Xóa thành công" });
             return BadRequest(new { message = "Lỗi khi xóa" });
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(string id)
+        {
+            var result = _bus.GetById(id);
+            if (result == null)
+                return NotFound(new { message = "Không tìm thấy vận đơn." });
+            return Ok(result);
+        }
+
+        [HttpGet("tra-cuu/{soVanDon}")]
+        public IActionResult TraCuu(string soVanDon)
+        {
+            var data = _bus.GetDetail(soVanDon);
+            if (data == null)
+                return NotFound(new { message = "Không tìm thấy vận đơn." });
+            return Ok(data);
+        }
+
+        [HttpGet("export-excel")]
+        public IActionResult ExportExcel()
+        {
+            using var pkg = new ExcelPackage();
+            var ws = pkg.Workbook.Worksheets.Add("VanDon");
+
+            ws.Cells[1, 1].Value = "Mã vận đơn";
+            ws.Cells[1, 2].Value = "Số vận đơn";
+            ws.Cells[1, 3].Value = "Mã đơn";
+            ws.Cells[1, 4].Value = "Ngày phát hành";
+            ws.Cells[1, 5].Value = "Thông tin nhà xe";
+
+            var list = _bus.GetAll();
+            int r = 2;
+
+            foreach (var x in list)
+            {
+                ws.Cells[r, 1].Value = x.MaVanDon;
+                ws.Cells[r, 2].Value = x.SoVanDon;
+                ws.Cells[r, 3].Value = x.MaDon;
+                ws.Cells[r, 4].Value = x.NgayPhatHanh;
+                ws.Cells[r, 5].Value = x.ThongTinNhaXe;
+                r++;
+            }
+
+            return File(pkg.GetAsByteArray(),
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              "VanDon.xlsx");
         }
     }
 }
