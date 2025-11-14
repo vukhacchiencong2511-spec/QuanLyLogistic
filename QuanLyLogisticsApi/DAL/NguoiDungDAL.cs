@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+using System.Data.SqlClient;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.DAL
@@ -98,6 +98,28 @@ namespace QuanLyLogisticsApi.DAL
                     HoTen = dr["HoTen"].ToString(),
                     MaVaiTro = Convert.ToInt32(dr["MaVaiTro"]),
                     NgayTao = Convert.ToDateTime(dr["NgayTao"])
+                };
+            }
+            return null;
+        }
+
+        public NguoiDung GetById(string id)
+        {
+            using SqlConnection conn = new(_conn);
+            SqlCommand cmd = new("SELECT * FROM NguoiDung WHERE MaNguoiDung=@id", conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            using SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                return new NguoiDung
+                {
+                    MaNguoiDung = dr["MaNguoiDung"].ToString(),
+                    TenDangNhap = dr["TenDangNhap"].ToString(),
+                    MatKhau = dr["MatKhau"].ToString(),
+                    HoTen = dr["HoTen"].ToString(),
+                    MaVaiTro = Convert.ToInt32(dr["MaVaiTro"]),
+                    NgayTao = dr["NgayTao"] as DateTime?
                 };
             }
             return null;
