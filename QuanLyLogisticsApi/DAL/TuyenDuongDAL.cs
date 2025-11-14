@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+using System.Data.SqlClient;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.DAL
@@ -59,18 +59,34 @@ namespace QuanLyLogisticsApi.DAL
         public bool Update(TuyenDuong t)
         {
             using SqlConnection conn = new(_conn);
+
             SqlCommand cmd = new(@"UPDATE TuyenDuong 
-                SET PhuongTien=@pt, ThoiGianBatDau=@bd, ThoiGianKetThuc=@kt, 
-                    DoanhThuUocTinh=@dt 
-                WHERE MaTuyen=@ma", conn);
-            cmd.Parameters.AddWithValue("@ma", t.MaTuyen);
-            cmd.Parameters.AddWithValue("@pt", t.PhuongTien);
-            cmd.Parameters.AddWithValue("@bd", t.ThoiGianBatDau);
-            cmd.Parameters.AddWithValue("@kt", t.ThoiGianKetThuc);
+        SET 
+            MaTuyenCode = @code,
+            MaTaiXe = @tx,
+            PhuongTien = @pt,
+            ThoiGianBatDau = @bd,
+            ThoiGianKetThuc = @kt,
+            MaKhuVuc = @kv,
+            DoanhThuUocTinh = @dt,
+            NgayTao = @ngay
+        WHERE MaTuyen = @ma", conn);
+
+            cmd.Parameters.AddWithValue("@ma", t.MaTuyen ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@code", t.MaTuyenCode ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@tx", t.MaTaiXe ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@pt", t.PhuongTien ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@bd", t.ThoiGianBatDau ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@kt", t.ThoiGianKetThuc ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@kv", t.MaKhuVuc ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@dt", t.DoanhThuUocTinh);
+            cmd.Parameters.AddWithValue("@ngay", t.NgayTao ?? (object)DBNull.Value);
+
             conn.Open();
-            return cmd.ExecuteNonQuery() > 0;
+            int rows = cmd.ExecuteNonQuery();
+            return rows > 0;
         }
+
 
         public bool Delete(string id)
         {
@@ -79,6 +95,32 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@id", id);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public TuyenDuong? GetById(string id)
+        {
+            using SqlConnection conn = new(_conn);
+            string sql = "SELECT * FROM TuyenDuong WHERE MaTuyen = @id";
+            SqlCommand cmd = new(sql, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            using SqlDataReader r = cmd.ExecuteReader();
+            if (r.Read())
+            {
+                return new TuyenDuong
+                {
+                    MaTuyen = r["MaTuyen"].ToString(),
+                    MaTuyenCode = r["MaTuyenCode"].ToString(),
+                    MaTaiXe = r["MaTaiXe"].ToString(),
+                    PhuongTien = r["PhuongTien"].ToString(),
+                    ThoiGianBatDau = r["ThoiGianBatDau"] as DateTime?,
+                    ThoiGianKetThuc = r["ThoiGianKetThuc"] as DateTime?,
+                    MaKhuVuc = r["MaKhuVuc"].ToString(),
+                    DoanhThuUocTinh = r.GetDecimal(r.GetOrdinal("DoanhThuUocTinh")),
+                    NgayTao = r["NgayTao"] as DateTime?
+                };
+            }
+            return null;
         }
     }
 }
