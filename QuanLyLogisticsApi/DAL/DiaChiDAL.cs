@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+using System.Data.SqlClient;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.DAL
@@ -72,6 +72,28 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@id", id);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public DiaChi? GetById(string id)
+        {
+            using SqlConnection conn = new(_conn);
+            SqlCommand cmd = new("SELECT * FROM DiaChi WHERE MaDiaChi=@id", conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new DiaChi
+                {
+                    MaDiaChi = reader["MaDiaChi"].ToString(),
+                    MaKhachHang = reader["MaKhachHang"].ToString(),
+                    DiaChiChiTiet = reader["DiaChiChiTiet"].ToString(),
+                    ThanhPho = reader["ThanhPho"].ToString(),
+                    QuanHuyen = reader["QuanHuyen"].ToString(),
+                    MaBuuDien = reader["MaBuuDien"].ToString()
+                };
+            }
+            return null;
         }
     }
 }
