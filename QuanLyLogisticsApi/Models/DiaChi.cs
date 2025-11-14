@@ -1,4 +1,4 @@
-﻿namespace QuanLyLogisticsApi.Models
+namespace QuanLyLogisticsApi.Models
 {
     public class DiaChi
     {
