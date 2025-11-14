@@ -4,6 +4,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.BUS;
+using OfficeOpenXml;
+
+ExcelPackage.License.SetNonCommercialPersonal("QuanLyLogistic");
 
 
 var builder = WebApplication.CreateBuilder(args);
