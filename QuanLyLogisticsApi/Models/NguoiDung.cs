@@ -1,4 +1,4 @@
-﻿namespace QuanLyLogisticsApi.Models
+namespace QuanLyLogisticsApi.Models
 {
     public class NguoiDung
     {
@@ -7,6 +7,6 @@
         public string MatKhau { get; set; }
         public string HoTen { get; set; }
         public int MaVaiTro { get; set; }
-        public DateTime NgayTao { get; set; }
+        public DateTime? NgayTao { get; set; } = DateTime.Now;
     }
 }
