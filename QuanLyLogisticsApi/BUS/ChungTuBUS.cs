@@ -1,4 +1,4 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.BUS
@@ -33,5 +33,7 @@ namespace QuanLyLogisticsApi.BUS
                 throw new ArgumentException("Mã chứng từ không hợp lệ.");
             return _dal.Delete(id);
         }
+        public ChungTu? GetById(long id) => _dal.GetById(id);
+
     }
 }
