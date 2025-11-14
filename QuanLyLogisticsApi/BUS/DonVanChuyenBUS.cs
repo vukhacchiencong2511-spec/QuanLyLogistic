@@ -1,4 +1,4 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.BUS
@@ -33,5 +33,7 @@ namespace QuanLyLogisticsApi.BUS
                 throw new ArgumentException("Mã đơn vận chuyển không hợp lệ.");
             return _dal.Delete(id);
         }
+
+        public DonVanChuyen? GetById(string id) => _dal.GetById(id);
     }
 }
