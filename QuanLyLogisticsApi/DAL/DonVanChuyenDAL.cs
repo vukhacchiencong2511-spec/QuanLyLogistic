@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+using System.Data.SqlClient;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.DAL
@@ -69,17 +69,42 @@ namespace QuanLyLogisticsApi.DAL
         public bool Update(DonVanChuyen d)
         {
             using SqlConnection conn = new(_conn);
-            SqlCommand cmd = new(@"UPDATE DonVanChuyen SET 
-                TrangThai=@tt, LoaiHang=@loai, KhoiLuong=@kl, GiaTriKhaiBao=@gt 
-                WHERE MaDon=@madon", conn);
+            SqlCommand cmd = new(@"
+        UPDATE DonVanChuyen SET 
+            MaDonCode = @code,
+            MaVanDon = @vandon,
+            MaKhachGui = @khg,
+            MaKhachNhan = @khn,
+            MaDiaChiLay = @lay,
+            MaDiaChiGiao = @giao,
+            LoaiHang = @loai,
+            KhoiLuong = @kl,
+            GiaTriKhaiBao = @gt,
+            NguoiTao = @ngtao,
+            NgayTao = @ngay,
+            MaTuyen = @tuyen,
+            TrangThai = @tt
+        WHERE MaDon = @madon", conn);
+
             cmd.Parameters.AddWithValue("@madon", d.MaDon);
-            cmd.Parameters.AddWithValue("@tt", d.TrangThai);
-            cmd.Parameters.AddWithValue("@loai", d.LoaiHang);
+            cmd.Parameters.AddWithValue("@code", d.MaDonCode ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@vandon", d.MaVanDon ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@khg", d.MaKhachGui ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@khn", d.MaKhachNhan ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@lay", d.MaDiaChiLay ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@giao", d.MaDiaChiGiao ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@loai", d.LoaiHang ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@kl", d.KhoiLuong);
             cmd.Parameters.AddWithValue("@gt", d.GiaTriKhaiBao);
+            cmd.Parameters.AddWithValue("@ngtao", d.NguoiTao ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ngay", d.NgayTao ?? DateTime.Now);
+            cmd.Parameters.AddWithValue("@tuyen", d.MaTuyen ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@tt", d.TrangThai ?? (object)DBNull.Value);
+
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
+
 
         public bool Delete(string id)
         {
@@ -88,6 +113,36 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@id", id);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public DonVanChuyen GetById(string id)
+        {
+            using SqlConnection conn = new(_conn);
+            SqlCommand cmd = new("SELECT * FROM DonVanChuyen WHERE MaDon=@id", conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            using SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                return new DonVanChuyen
+                {
+                    MaDon = dr["MaDon"].ToString(),
+                    MaDonCode = dr["MaDonCode"].ToString(),
+                    MaVanDon = dr["MaVanDon"].ToString(),
+                    MaKhachGui = dr["MaKhachGui"].ToString(),
+                    MaKhachNhan = dr["MaKhachNhan"].ToString(),
+                    MaDiaChiLay = dr["MaDiaChiLay"].ToString(),
+                    MaDiaChiGiao = dr["MaDiaChiGiao"].ToString(),
+                    LoaiHang = dr["LoaiHang"].ToString(),
+                    KhoiLuong = dr["KhoiLuong"] != DBNull.Value ? Convert.ToDecimal(dr["KhoiLuong"]) : 0,
+                    GiaTriKhaiBao = dr["GiaTriKhaiBao"] != DBNull.Value ? Convert.ToDecimal(dr["GiaTriKhaiBao"]) : 0,
+                    NguoiTao = dr["NguoiTao"].ToString(),
+                    NgayTao = dr["NgayTao"] as DateTime?,
+                    MaTuyen = dr["MaTuyen"].ToString(),
+                    TrangThai = dr["TrangThai"].ToString()
+                };
+            }
+            return null;
         }
     }
 }
