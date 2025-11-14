@@ -1,4 +1,4 @@
-﻿using QuanLyLogisticsApi.DAL;
+using QuanLyLogisticsApi.DAL;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.BUS
@@ -32,6 +32,13 @@ namespace QuanLyLogisticsApi.BUS
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentException("Mã vận đơn không hợp lệ.");
             return _dal.Delete(id);
+        }
+
+        public VanDon? GetById(string id) => _dal.GetById(id);
+
+        public VanDonDetailDTO GetDetail(string soVanDon)
+        {
+            return _dal.GetDetail(soVanDon);
         }
     }
 }
