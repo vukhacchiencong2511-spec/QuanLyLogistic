@@ -1,4 +1,4 @@
-﻿namespace QuanLyLogisticsApi.Models
+namespace QuanLyLogisticsApi.Models
 {
     public class DonVanChuyen
     {
@@ -13,7 +13,7 @@
         public decimal KhoiLuong { get; set; }
         public decimal GiaTriKhaiBao { get; set; }
         public string NguoiTao { get; set; }
-        public DateTime NgayTao { get; set; }
+        public DateTime? NgayTao { get; set; } = DateTime.Now;
         public string MaTuyen { get; set; }
         public string TrangThai { get; set; }
     }
