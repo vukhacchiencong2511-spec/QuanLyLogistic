@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+using System.Data.SqlClient;
 using QuanLyLogisticsApi.Models;
 
 namespace QuanLyLogisticsApi.DAL
@@ -78,6 +78,33 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@id", id);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public SuKienTrangThai? GetById(long id)
+        {
+            using SqlConnection conn = new(_conn);
+            string sql = "SELECT * FROM SuKienTrangThai WHERE MaSuKien = @id";
+            SqlCommand cmd = new(sql, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            using SqlDataReader r = cmd.ExecuteReader();
+            if (r.Read())
+            {
+                return new SuKienTrangThai
+                {
+                    MaSuKien = Convert.ToInt64(r["MaSuKien"]),
+                    MaDon = r["MaDon"].ToString(),
+                    TrangThai = r["TrangThai"].ToString(),
+                    LyDo = r["LyDo"].ToString(),
+                    ThoiGian = r["ThoiGian"] as DateTime?,
+                    NguoiCapNhat = r["NguoiCapNhat"].ToString(),
+                    DuLieuThem = r["DuLieuThem"].ToString(),
+                    MaSuKienNgoai = r["MaSuKienNgoai"].ToString(),
+                    KhoaIdempotent = r["KhoaIdempotent"].ToString(),
+                    NgayTao = r["NgayTao"] as DateTime?
+                };
+            }
+            return null;
         }
     }
 }
