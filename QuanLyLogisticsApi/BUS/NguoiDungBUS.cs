@@ -64,5 +64,9 @@ namespace QuanLyLogisticsApi.BUS
         }
         public NguoiDung GetById(string id) => _dal.GetById(id);
 
+        public bool ChangePassword(string id, string newPass)
+        {
+            return _dal.ChangePassword(id, newPass);
+        }
     }
 }
