@@ -124,5 +124,17 @@ namespace QuanLyLogisticsApi.DAL
             }
             return null;
         }
+
+        public bool ChangePassword(string id, string newPass)
+        {
+            using SqlConnection conn = new(_conn);
+            SqlCommand cmd = new("UPDATE NguoiDung SET MatKhau=@pass WHERE MaNguoiDung=@id", conn);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@pass", newPass);
+
+            conn.Open();
+            return cmd.ExecuteNonQuery() > 0;
+        }
     }
 }
