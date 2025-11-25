@@ -143,5 +143,22 @@ namespace QuanLyLogisticsApi.Controllers
                 );
             }
         }
+
+        [HttpPost("change-password")]
+        public IActionResult ChangePassword(ChangePasswordDTO dto)
+        {
+            var user = _bus.GetById(dto.MaNguoiDung);
+
+            if (user == null)
+                return NotFound("Không tìm thấy người dùng");
+
+            if (user.MatKhau != dto.MatKhauCu)
+                return BadRequest("Mật khẩu cũ không đúng");
+
+            if (_bus.ChangePassword(dto.MaNguoiDung, dto.MatKhauMoi))
+                return Ok("Đổi mật khẩu thành công");
+
+            return BadRequest("Không thể đổi mật khẩu");
+        }
     }
 }
