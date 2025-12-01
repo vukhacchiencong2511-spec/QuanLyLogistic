@@ -24,17 +24,17 @@ namespace QuanLyLogisticsApi.DAL
                 {
                     MaDon = dr["MaDon"].ToString(),
                     MaDonCode = dr["MaDonCode"].ToString(),
-                    MaVanDon = dr["MaVanDon"].ToString(),
+                    MaVanDon = dr["MaVanDon"] == DBNull.Value ? "" : dr["MaVanDon"].ToString(),
                     MaKhachGui = dr["MaKhachGui"].ToString(),
                     MaKhachNhan = dr["MaKhachNhan"].ToString(),
                     MaDiaChiLay = dr["MaDiaChiLay"].ToString(),
                     MaDiaChiGiao = dr["MaDiaChiGiao"].ToString(),
                     LoaiHang = dr["LoaiHang"].ToString(),
-                    KhoiLuong = Convert.ToDecimal(dr["KhoiLuong"]),
-                    GiaTriKhaiBao = Convert.ToDecimal(dr["GiaTriKhaiBao"]),
+                    KhoiLuong = dr["KhoiLuong"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["KhoiLuong"]),
+                    GiaTriKhaiBao = dr["GiaTriKhaiBao"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["GiaTriKhaiBao"]),
                     NguoiTao = dr["NguoiTao"].ToString(),
-                    NgayTao = Convert.ToDateTime(dr["NgayTao"]),
-                    MaTuyen = dr["MaTuyen"].ToString(),
+                    NgayTao = dr["NgayTao"] == DBNull.Value ? null : (DateTime?)dr["NgayTao"],
+                    MaTuyen = dr["MaTuyen"] == DBNull.Value ? "" : dr["MaTuyen"].ToString(),
                     TrangThai = dr["TrangThai"].ToString()
                 });
             }
@@ -56,10 +56,13 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@lay", d.MaDiaChiLay);
             cmd.Parameters.AddWithValue("@giao", d.MaDiaChiGiao);
             cmd.Parameters.AddWithValue("@loai", d.LoaiHang);
-            cmd.Parameters.AddWithValue("@kl", d.KhoiLuong);
-            cmd.Parameters.AddWithValue("@gt", d.GiaTriKhaiBao);
+            cmd.Parameters.AddWithValue("@kl",
+                d.KhoiLuong == 0 ? (object)DBNull.Value : d.KhoiLuong);
+            cmd.Parameters.AddWithValue("@gt",
+                d.GiaTriKhaiBao == 0 ? (object)DBNull.Value : d.GiaTriKhaiBao);
             cmd.Parameters.AddWithValue("@ngtao", d.NguoiTao);
-            cmd.Parameters.AddWithValue("@ngay", d.NgayTao);
+            cmd.Parameters.AddWithValue("@ngay",
+                d.NgayTao ?? DateTime.Now);
             cmd.Parameters.AddWithValue("@tuyen", d.MaTuyen);
             cmd.Parameters.AddWithValue("@tt", d.TrangThai);
             conn.Open();
@@ -94,8 +97,10 @@ namespace QuanLyLogisticsApi.DAL
             cmd.Parameters.AddWithValue("@lay", d.MaDiaChiLay ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@giao", d.MaDiaChiGiao ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@loai", d.LoaiHang ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@kl", d.KhoiLuong);
-            cmd.Parameters.AddWithValue("@gt", d.GiaTriKhaiBao);
+            cmd.Parameters.AddWithValue("@kl",
+                d.KhoiLuong == 0 ? (object)DBNull.Value : d.KhoiLuong);
+            cmd.Parameters.AddWithValue("@gt",
+                d.GiaTriKhaiBao == 0 ? (object)DBNull.Value : d.GiaTriKhaiBao);
             cmd.Parameters.AddWithValue("@ngtao", d.NguoiTao ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@ngay", d.NgayTao ?? DateTime.Now);
             cmd.Parameters.AddWithValue("@tuyen", d.MaTuyen ?? (object)DBNull.Value);
