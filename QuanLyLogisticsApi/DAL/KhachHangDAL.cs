@@ -32,9 +32,9 @@ namespace QuanLyLogisticsApi.DAL
                     {
                         MaKhachHang = rd["MaKhachHang"].ToString(),
                         TenKhachHang = rd["TenKhachHang"].ToString(),
-                        SoDienThoai = rd["SoDienThoai"].ToString(),
-                        Email = rd["Email"].ToString(),
-                        NgayTao = (DateTime)rd["NgayTao"]
+                        SoDienThoai = rd["SoDienThoai"] == DBNull.Value ? "" : rd["SoDienThoai"].ToString(),
+                        Email = rd["Email"] == DBNull.Value ? "" : rd["Email"].ToString(),
+                        NgayTao = rd["NgayTao"] == DBNull.Value ? null : Convert.ToDateTime(rd["NgayTao"])
                     });
                 }
             }
@@ -58,9 +58,9 @@ namespace QuanLyLogisticsApi.DAL
                     {
                         MaKhachHang = rd["MaKhachHang"].ToString(),
                         TenKhachHang = rd["TenKhachHang"].ToString(),
-                        SoDienThoai = rd["SoDienThoai"].ToString(),
-                        Email = rd["Email"].ToString(),
-                        NgayTao = (DateTime)rd["NgayTao"]
+                        SoDienThoai = rd["SoDienThoai"] == DBNull.Value ? "" : rd["SoDienThoai"].ToString(),
+                        Email = rd["Email"] == DBNull.Value ? "" : rd["Email"].ToString(),
+                        NgayTao = rd["NgayTao"] == DBNull.Value ? null : Convert.ToDateTime(rd["NgayTao"])
                     };
                 }
             }
@@ -77,8 +77,10 @@ namespace QuanLyLogisticsApi.DAL
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@MaKhachHang", kh.MaKhachHang);
                 cmd.Parameters.AddWithValue("@TenKhachHang", kh.TenKhachHang);
-                cmd.Parameters.AddWithValue("@SoDienThoai", kh.SoDienThoai);
-                cmd.Parameters.AddWithValue("@Email", kh.Email);
+                cmd.Parameters.AddWithValue("@SoDienThoai",
+                    string.IsNullOrWhiteSpace(kh.SoDienThoai) ? (object)DBNull.Value : kh.SoDienThoai);
+                cmd.Parameters.AddWithValue("@Email",
+                    string.IsNullOrWhiteSpace(kh.Email) ? (object)DBNull.Value : kh.Email);
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
