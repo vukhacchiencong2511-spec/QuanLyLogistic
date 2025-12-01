@@ -89,5 +89,38 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "SuKienTrangThai.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest();
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var s = new SuKienTrangThai
+                {
+                    MaDon = ws.Cells[i, 2].Text,
+                    TrangThai = ws.Cells[i, 3].Text,
+                    LyDo = ws.Cells[i, 4].Text,
+                    ThoiGian = DateTime.TryParse(ws.Cells[i, 5].Text, out var tg) ? tg : DateTime.Now,
+                    NguoiCapNhat = ws.Cells[i, 6].Text,
+                    DuLieuThem = ws.Cells[i, 7].Text,
+                    MaSuKienNgoai = ws.Cells[i, 8].Text,
+                    KhoaIdempotent = ws.Cells[i, 9].Text,
+                    NgayTao = DateTime.TryParse(ws.Cells[i, 12].Text, out var nt) ? nt : DateTime.Now
+                };
+
+                _bus.Add(s);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
