@@ -16,8 +16,10 @@ namespace QuanLyLogisticsApi.DAL
             var list = new List<TuyenDuong>();
             using SqlConnection conn = new(_conn);
             SqlCommand cmd = new("SELECT * FROM TuyenDuong", conn);
+
             conn.Open();
             SqlDataReader dr = cmd.ExecuteReader();
+
             while (dr.Read())
             {
                 list.Add(new TuyenDuong
@@ -26,11 +28,17 @@ namespace QuanLyLogisticsApi.DAL
                     MaTuyenCode = dr["MaTuyenCode"].ToString(),
                     MaTaiXe = dr["MaTaiXe"].ToString(),
                     PhuongTien = dr["PhuongTien"].ToString(),
-                    ThoiGianBatDau = Convert.ToDateTime(dr["ThoiGianBatDau"]),
-                    ThoiGianKetThuc = Convert.ToDateTime(dr["ThoiGianKetThuc"]),
+
+                    ThoiGianBatDau = dr["ThoiGianBatDau"] == DBNull.Value ? null : Convert.ToDateTime(dr["ThoiGianBatDau"]),
+                    ThoiGianKetThuc = dr["ThoiGianKetThuc"] == DBNull.Value ? null : Convert.ToDateTime(dr["ThoiGianKetThuc"]),
+
                     MaKhuVuc = dr["MaKhuVuc"].ToString(),
-                    DoanhThuUocTinh = Convert.ToDecimal(dr["DoanhThuUocTinh"]),
-                    NgayTao = Convert.ToDateTime(dr["NgayTao"])
+
+                    DoanhThuUocTinh = dr["DoanhThuUocTinh"] == DBNull.Value
+                        ? null
+                        : Convert.ToDecimal(dr["DoanhThuUocTinh"]),
+
+                    NgayTao = dr["NgayTao"] == DBNull.Value ? null : Convert.ToDateTime(dr["NgayTao"])
                 });
             }
             return list;
@@ -39,19 +47,22 @@ namespace QuanLyLogisticsApi.DAL
         public bool Add(TuyenDuong t)
         {
             using SqlConnection conn = new(_conn);
+
             SqlCommand cmd = new(@"INSERT INTO TuyenDuong 
-                (MaTuyen, MaTuyenCode, MaTaiXe, PhuongTien, ThoiGianBatDau, 
-                 ThoiGianKetThuc, MaKhuVuc, DoanhThuUocTinh, NgayTao)
-                VALUES (@ma, @code, @tx, @pt, @bd, @kt, @kv, @dt, @ngay)", conn);
+        (MaTuyen, MaTuyenCode, MaTaiXe, PhuongTien, ThoiGianBatDau,
+         ThoiGianKetThuc, MaKhuVuc, DoanhThuUocTinh, NgayTao)
+        VALUES (@ma, @code, @tx, @pt, @bd, @kt, @kv, @dt, @ngay)", conn);
+
             cmd.Parameters.AddWithValue("@ma", t.MaTuyen);
-            cmd.Parameters.AddWithValue("@code", t.MaTuyenCode);
-            cmd.Parameters.AddWithValue("@tx", t.MaTaiXe);
-            cmd.Parameters.AddWithValue("@pt", t.PhuongTien);
-            cmd.Parameters.AddWithValue("@bd", t.ThoiGianBatDau);
-            cmd.Parameters.AddWithValue("@kt", t.ThoiGianKetThuc);
-            cmd.Parameters.AddWithValue("@kv", t.MaKhuVuc);
-            cmd.Parameters.AddWithValue("@dt", t.DoanhThuUocTinh);
-            cmd.Parameters.AddWithValue("@ngay", t.NgayTao);
+            cmd.Parameters.AddWithValue("@code", t.MaTuyenCode ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@tx", t.MaTaiXe ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@pt", t.PhuongTien ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@bd", t.ThoiGianBatDau ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@kt", t.ThoiGianKetThuc ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@kv", t.MaKhuVuc ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@dt", t.DoanhThuUocTinh ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ngay", t.NgayTao ?? (object)DBNull.Value);
+
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -60,8 +71,7 @@ namespace QuanLyLogisticsApi.DAL
         {
             using SqlConnection conn = new(_conn);
 
-            SqlCommand cmd = new(@"UPDATE TuyenDuong 
-        SET 
+            SqlCommand cmd = new(@"UPDATE TuyenDuong SET 
             MaTuyenCode = @code,
             MaTaiXe = @tx,
             PhuongTien = @pt,
@@ -72,19 +82,18 @@ namespace QuanLyLogisticsApi.DAL
             NgayTao = @ngay
         WHERE MaTuyen = @ma", conn);
 
-            cmd.Parameters.AddWithValue("@ma", t.MaTuyen ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ma", t.MaTuyen);
             cmd.Parameters.AddWithValue("@code", t.MaTuyenCode ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@tx", t.MaTaiXe ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@pt", t.PhuongTien ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@bd", t.ThoiGianBatDau ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@kt", t.ThoiGianKetThuc ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@kv", t.MaKhuVuc ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@dt", t.DoanhThuUocTinh);
+            cmd.Parameters.AddWithValue("@dt", t.DoanhThuUocTinh ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@ngay", t.NgayTao ?? (object)DBNull.Value);
 
             conn.Open();
-            int rows = cmd.ExecuteNonQuery();
-            return rows > 0;
+            return cmd.ExecuteNonQuery() > 0;
         }
 
 
@@ -100,11 +109,12 @@ namespace QuanLyLogisticsApi.DAL
         public TuyenDuong? GetById(string id)
         {
             using SqlConnection conn = new(_conn);
-            string sql = "SELECT * FROM TuyenDuong WHERE MaTuyen = @id";
-            SqlCommand cmd = new(sql, conn);
+            SqlCommand cmd = new("SELECT * FROM TuyenDuong WHERE MaTuyen=@id", conn);
             cmd.Parameters.AddWithValue("@id", id);
+
             conn.Open();
-            using SqlDataReader r = cmd.ExecuteReader();
+            using var r = cmd.ExecuteReader();
+
             if (r.Read())
             {
                 return new TuyenDuong
@@ -113,13 +123,20 @@ namespace QuanLyLogisticsApi.DAL
                     MaTuyenCode = r["MaTuyenCode"].ToString(),
                     MaTaiXe = r["MaTaiXe"].ToString(),
                     PhuongTien = r["PhuongTien"].ToString(),
-                    ThoiGianBatDau = r["ThoiGianBatDau"] as DateTime?,
-                    ThoiGianKetThuc = r["ThoiGianKetThuc"] as DateTime?,
+
+                    ThoiGianBatDau = r["ThoiGianBatDau"] == DBNull.Value ? null : Convert.ToDateTime(r["ThoiGianBatDau"]),
+                    ThoiGianKetThuc = r["ThoiGianKetThuc"] == DBNull.Value ? null : Convert.ToDateTime(r["ThoiGianKetThuc"]),
+
                     MaKhuVuc = r["MaKhuVuc"].ToString(),
-                    DoanhThuUocTinh = r.GetDecimal(r.GetOrdinal("DoanhThuUocTinh")),
-                    NgayTao = r["NgayTao"] as DateTime?
+
+                    DoanhThuUocTinh = r["DoanhThuUocTinh"] == DBNull.Value
+                        ? null
+                        : Convert.ToDecimal(r["DoanhThuUocTinh"]),
+
+                    NgayTao = r["NgayTao"] == DBNull.Value ? null : Convert.ToDateTime(r["NgayTao"])
                 };
             }
+
             return null;
         }
     }
