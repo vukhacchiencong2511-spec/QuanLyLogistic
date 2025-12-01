@@ -35,8 +35,7 @@ async function searchTracking() {
   const container = document.getElementById("trackingResult");
 
   if (!code) {
-    container.innerHTML = `<p style="color:#ffb3b3">Vui lòng nhập mã vận đơn.</
-    p>`;
+    container.innerHTML = `<p style="color:#ffb3b3">Vui lòng nhập mã vận đơn.</p>`;
     return;
   }
 
@@ -229,6 +228,103 @@ async function loadTable(entity){
   }catch(err){ console.error(err); wrap.innerHTML = `<p style="color:#ffb3b3">Lỗi kết nối</p>`; }
 }
 
+const headerMap = {
+  /* ========= BẢNG NGƯỜI DÙNG ========= */
+  maNguoiDung: "Mã người dùng",
+  tenDangNhap: "Tên đăng nhập",
+  matKhau: "Mật khẩu",
+  hoTen: "Họ tên",
+  maVaiTro: "Mã vai trò",
+  ngayTao: "Ngày tạo",
+
+  /* ========= BẢNG KHÁCH HÀNG ========= */
+  maKhachHang: "Mã khách hàng",
+  tenKhachHang: "Tên khách hàng",
+  soDienThoai: "Số điện thoại",
+  email: "Email",
+
+  /* ========= BẢNG ĐỊA CHỈ ========= */
+  maDiaChi: "Mã địa chỉ",
+  maKhachHang: "Mã khách hàng",
+  diaChiChiTiet: "Địa chỉ chi tiết",
+  thanhPho: "Thành phố",
+  quanHuyen: "Quận / Huyện",
+  maBuuDien: "Mã bưu điện",
+
+  /* ========= BẢNG ĐƠN VẬN CHUYỂN ========= */
+  maDon: "Mã đơn",
+  maDonCode: "Mã đơn code",
+  maVanDon: "Mã vận đơn",
+  maKhachGui: "Mã khách gửi",
+  maKhachNhan: "Mã khách nhận",
+  maDiaChiLay: "Mã địa chỉ lấy hàng",
+  maDiaChiGiao: "Mã địa chỉ giao hàng",
+  loaiHang: "Loại hàng",
+  khoiLuong: "Khối lượng (kg)",
+  giaTriKhaiBao: "Giá trị khai báo",
+  nguoiTao: "Người tạo",
+  maTuyen: "Mã tuyến đường",
+  trangThai: "Trạng thái đơn hàng",
+
+  /* ========= BẢNG VẬN ĐƠN ========= */
+  soVanDon: "Số vận đơn",
+  ngayPhatHanh: "Ngày phát hành",
+  thongTinNhaXe: "Thông tin nhà xe",
+
+  /* ========= BẢNG TUYẾN ĐƯỜNG ========= */
+  maTuyenCode: "Mã tuyến code",
+  maTaiXe: "Mã tài xế",
+  phuongTien: "Phương tiện",
+  thoiGianBatDau: "Thời gian khởi hành",
+  thoiGianKetThuc: "Thời gian kết thúc",
+  maKhuVuc: "Mã khu vực",
+  doanhThuUocTinh: "Doanh thu ước tính",
+
+  /* ========= BẢNG ĐIỂM DỪNG ========= */
+  maDiemDung: "Mã điểm dừng",
+  thuTuDung: "Thứ tự dừng",
+  duKienDen: "Dự kiến đến",
+  thucTeDen: "Thực tế đến",
+
+  /* ========= BẢNG SỰ KIỆN TRẠNG THÁI ========= */
+  maSuKien: "Mã sự kiện",
+  lyDo: "Lý do",
+  thoiGian: "Thời gian cập nhật",
+  nguoiCapNhat: "Người cập nhật",
+  duLieuThem: "Dữ liệu thêm",
+  maSuKienNgoai: "Mã sự kiện ngoài",
+  khoaIdempotent: "Khóa Idempotent",
+
+  /* ========= BẢNG GIAO DỊCH COD ========= */
+  maGiaoDich: "Mã giao dịch",
+  soTien: "Số tiền COD",
+  nguoiThu: "Người thu",
+  ngayThu: "Ngày thu",
+  daDoiSoat: "Đã đối soát",
+  ngayDoiSoat: "Ngày đối soát",
+  soTienThanhToan: "Số tiền thanh toán",
+  
+  /* ========= BẢNG CHỨNG TỪ ========= */
+  maChungTu: "Mã chứng từ",
+  nguoiUpload: "Người upload",
+  ngayUpload: "Ngày upload",
+  kyNhan: "Ký nhận",
+  duongDanThuNho: "Đường dẫn thu nhỏ",
+  loaiKyNhan: "Loại ký nhận",
+
+  /* ========= BẢNG ĐƠN YÊU CẦU ========= */
+  maYeuCau: "Mã yêu cầu",
+  tenNguoiGui: "Tên người gửi",
+  sdtNguoiGui: "SĐT người gửi",
+  emailNguoiGui: "Email người gửi",
+  diaChiGui: "Địa chỉ gửi",
+  tenNguoiNhan: "Tên người nhận",
+  sdtNguoiNhan: "SĐT người nhận",
+  emailNguoiNhan: "Email người nhận",
+  diaChiNhan: "Địa chỉ nhận",
+  ghiChu: "Ghi chú",
+};
+
 function renderTable() {
     const wrap = document.getElementById("dataTable");
 
@@ -245,7 +341,7 @@ function renderTable() {
     const keys = Object.keys(pageData[0]);
 
     let html = `<table id="entityTable"><thead><tr>
-        <th></th>${keys.map(k => `<th>${k}</th>`).join('')}
+    <th></th>${keys.map(k => `<th>${headerMap[k] || k}</th>`).join('')}
     </tr></thead><tbody>`;
 
     pageData.forEach((r, idx) => {
@@ -597,7 +693,7 @@ async function loadUsers(){
     if(currentData.length === 0){ wrap.innerHTML = '<p>Không có tài khoản</p>'; return; }
     // build table like generic
     const keys = Object.keys(currentData[0]);
-    let html = `<table id="entityTable"><thead><tr><th></th>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;
+    let html = `<table id="entityTable"><thead><tr><th></th>${keys.map(k=>`<th>${headerMap[k] || k}</th>`).join('')}</tr></thead><tbody>`;
     currentData.forEach((r, idx)=>{
       html += `<tr data-idx="${idx}" onclick="onRowClick(${idx})"><td><input type="radio" name="selRow"></td>${keys.map(k=>`<td>${r[k]??''}</td>`).join('')}</tr>`;
     });
@@ -726,7 +822,6 @@ async function onExport() {
       alert("Không thể xuất Excel: " + res.status);
       return;
     }
-    
 
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
@@ -735,58 +830,58 @@ async function onExport() {
     a.download = `${entity}.xlsx`;
     a.click();
     window.URL.revokeObjectURL(url);
-  
   } catch (err) {
     console.error(err);
     alert("Lỗi kết nối API khi xuất Excel!");
   }
 }
-//import
-async function onImport() {
-    const entity = currentEntity;
-    if (!entity) {
-        alert("Vui lòng chọn bảng cần import!");
+
+function openImport() {
+    if (!currentEntity) {
+        alert("❌ Chưa chọn loại dữ liệu để import!");
         return;
     }
-
-    const fileInput = document.getElementById("excelInput");
-    if (!fileInput) {
-        alert("Không tìm thấy input Import!");
-        return;
-    }
-
-    fileInput.click();
-
-    fileInput.onchange = async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const res = await fetch(`${API_BASE}/${entity}/import-excel`, {
-                method: "POST",
-                body: formData
-            });
-
-            if (!res.ok) {
-                const msg = await res.text();
-                alert("❌ Import lỗi: " + msg);
-                return;
-            }
-
-            alert("📥 Import thành công!");
-            loadData(); // reload bảng hiện tại
-        }
-        catch (e) {
-            console.error(e);
-            alert("❌ Không thể kết nối API!");
-        }
-
-        fileInput.value = "";
-    };
+    document.getElementById("importFile").click();
 }
+
+async function importExcel() {
+    if (!currentEntity) {
+        alert("❌ Bạn phải chọn bảng trước khi import!");
+        return;
+    }
+
+    const fileInput = document.getElementById("importFile");
+    if (!fileInput.files.length) {
+        alert("❌ Bạn chưa chọn file Excel!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const res = await fetch(`${API_BASE}/${currentEntity}/import-excel`, {
+            method: "POST",
+            body: formData
+        });
+
+        const txt = await res.text();
+
+        if (!res.ok) {
+            alert("❌ Import thất bại:\n" + txt);
+            return;
+        }
+
+        alert("✅ Import thành công!");
+        loadTable(currentEntity);
+
+    } catch (err) {
+        console.error(err);
+        alert("❌ Lỗi kết nối server!");
+    }
+}
+
 
 //khachhang
 
