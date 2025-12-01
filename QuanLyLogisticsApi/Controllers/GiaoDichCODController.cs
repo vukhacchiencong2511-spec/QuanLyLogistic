@@ -88,5 +88,37 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "GiaoDichCOD.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest("Chưa chọn file.");
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var g = new GiaoDichCOD
+                {
+                    MaDon = ws.Cells[i, 2].Text,
+                    SoTien = decimal.TryParse(ws.Cells[i, 3].Text, out var stt) ? stt : 0,
+                    NguoiThu = ws.Cells[i, 4].Text,
+                    NgayThu = DateTime.TryParse(ws.Cells[i, 5].Text, out var nt) ? nt : null,
+                    DaDoiSoat = bool.TryParse(ws.Cells[i, 6].Text, out var ds) ? ds : false,
+                    NgayDoiSoat = DateTime.TryParse(ws.Cells[i, 7].Text, out var nds) ? nds : null,
+                    SoTienThanhToan = decimal.TryParse(ws.Cells[i, 8].Text, out var tt) ? tt : 0,
+                    DuLieuThem = ws.Cells[i, 9].Text
+                };
+
+                _bus.Add(g);
+            }
+
+            return Ok("Import GiaoDichCOD thành công!");
+        }
     }
 }
