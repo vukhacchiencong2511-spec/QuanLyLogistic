@@ -83,5 +83,34 @@ namespace QuanLyLogisticsApi.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "DiaChi.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest();
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var dc = new DiaChi
+                {
+                    MaDiaChi = ws.Cells[i, 1].Text,
+                    MaKhachHang = ws.Cells[i, 2].Text,
+                    DiaChiChiTiet = ws.Cells[i, 3].Text,
+                    ThanhPho = ws.Cells[i, 4].Text,
+                    QuanHuyen = ws.Cells[i, 5].Text,
+                    MaBuuDien = ws.Cells[i, 6].Text
+                };
+                _bus.Add(dc);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
