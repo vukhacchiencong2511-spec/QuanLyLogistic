@@ -89,5 +89,34 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "VanDon.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest();
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var d = new VanDon
+                {
+                    MaVanDon = ws.Cells[i, 1].Text,
+                    SoVanDon = ws.Cells[i, 2].Text,
+                    MaDon = ws.Cells[i, 3].Text,
+                    NgayPhatHanh = DateTime.TryParse(ws.Cells[i, 4].Text, out var date) ? date : null,
+                    ThongTinNhaXe = ws.Cells[i, 5].Text
+                };
+
+                _bus.Add(d);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
