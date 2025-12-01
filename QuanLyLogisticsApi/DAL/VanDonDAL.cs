@@ -25,7 +25,7 @@ namespace QuanLyLogisticsApi.DAL
                     MaVanDon = dr["MaVanDon"].ToString(),
                     SoVanDon = dr["SoVanDon"].ToString(),
                     MaDon = dr["MaDon"].ToString(),
-                    NgayPhatHanh = Convert.ToDateTime(dr["NgayPhatHanh"]),
+                    NgayPhatHanh = dr["NgayPhatHanh"] == DBNull.Value ? null : (DateTime?)dr["NgayPhatHanh"],
                     ThongTinNhaXe = dr["ThongTinNhaXe"].ToString()
                 });
             }
@@ -40,9 +40,9 @@ namespace QuanLyLogisticsApi.DAL
                 VALUES (@ma, @so, @don, @ngay, @ttnx)", conn);
             cmd.Parameters.AddWithValue("@ma", v.MaVanDon);
             cmd.Parameters.AddWithValue("@so", v.SoVanDon);
-            cmd.Parameters.AddWithValue("@don", v.MaDon);
-            cmd.Parameters.AddWithValue("@ngay", v.NgayPhatHanh);
-            cmd.Parameters.AddWithValue("@ttnx", v.ThongTinNhaXe);
+            cmd.Parameters.AddWithValue("@don", v.MaDon ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ngay", v.NgayPhatHanh ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ttnx", v.ThongTinNhaXe ?? (object)DBNull.Value);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -55,8 +55,8 @@ namespace QuanLyLogisticsApi.DAL
                 WHERE MaVanDon=@ma", conn);
             cmd.Parameters.AddWithValue("@ma", v.MaVanDon);
             cmd.Parameters.AddWithValue("@so", v.SoVanDon);
-            cmd.Parameters.AddWithValue("@ngay", v.NgayPhatHanh);
-            cmd.Parameters.AddWithValue("@ttnx", v.ThongTinNhaXe);
+            cmd.Parameters.AddWithValue("@ngay", v.NgayPhatHanh ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ttnx", v.ThongTinNhaXe ?? (object)DBNull.Value);
             conn.Open();
             return cmd.ExecuteNonQuery() > 0;
         }
