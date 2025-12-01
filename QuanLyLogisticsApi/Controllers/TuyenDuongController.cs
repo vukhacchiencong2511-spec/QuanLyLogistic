@@ -87,5 +87,38 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "TuyenDuong.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest("Chưa chọn file.");
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var td = new TuyenDuong
+                {
+                    MaTuyen = ws.Cells[i, 1].Text,
+                    MaTuyenCode = ws.Cells[i, 2].Text,
+                    MaTaiXe = ws.Cells[i, 3].Text,
+                    PhuongTien = ws.Cells[i, 4].Text,
+                    ThoiGianBatDau = DateTime.TryParse(ws.Cells[i, 5].Text, out var bd) ? bd : null,
+                    ThoiGianKetThuc = DateTime.TryParse(ws.Cells[i, 6].Text, out var kt) ? kt : null,
+                    MaKhuVuc = ws.Cells[i, 7].Text,
+                    DoanhThuUocTinh = decimal.TryParse(ws.Cells[i, 8].Text, out var dt) ? dt : 0,
+                    NgayTao = DateTime.TryParse(ws.Cells[i, 9].Text, out var nt) ? nt : DateTime.Now
+                };
+                _bus.Add(td);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
