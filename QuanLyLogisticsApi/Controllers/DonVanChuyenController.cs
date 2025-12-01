@@ -111,6 +111,44 @@ namespace QuanLyLogisticsApi.Controllers
                 return BadRequest("Lỗi export: " + ex.Message);
             }
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest("Không có file");
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var d = new DonVanChuyen
+                {
+                    MaDon = ws.Cells[i, 1].Text,
+                    MaDonCode = ws.Cells[i, 2].Text,
+                    MaVanDon = ws.Cells[i, 3].Text,
+                    MaKhachGui = ws.Cells[i, 4].Text,
+                    MaKhachNhan = ws.Cells[i, 5].Text,
+                    MaDiaChiLay = ws.Cells[i, 6].Text,
+                    MaDiaChiGiao = ws.Cells[i, 7].Text,
+                    LoaiHang = ws.Cells[i, 8].Text,
+                    KhoiLuong = decimal.TryParse(ws.Cells[i, 9].Text, out var kl) ? kl : 0,
+                    GiaTriKhaiBao = decimal.TryParse(ws.Cells[i, 10].Text, out var gt) ? gt : 0,
+                    NguoiTao = ws.Cells[i, 11].Text,
+                    NgayTao = DateTime.TryParse(ws.Cells[i, 12].Text, out var nt) ? nt : DateTime.Now,
+                    MaTuyen = ws.Cells[i, 13].Text,
+                    TrangThai = ws.Cells[i, 14].Text
+                };
+
+                _bus.Add(d);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
 
