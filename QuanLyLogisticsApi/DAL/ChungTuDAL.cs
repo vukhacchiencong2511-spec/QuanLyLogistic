@@ -25,7 +25,7 @@ namespace QuanLyLogisticsApi.DAL
                     MaChungTu = Convert.ToInt64(dr["MaChungTu"]),
                     MaDon = dr["MaDon"].ToString(),
                     NguoiUpload = dr["NguoiUpload"].ToString(),
-                    NgayUpload = Convert.ToDateTime(dr["NgayUpload"]),
+                    NgayUpload =  dr["NgayUpload"] == DBNull.Value ? null : Convert.ToDateTime(dr["NgayUpload"]),
                     KyNhan = dr["KyNhan"].ToString(),
                     DuongDanThuNho = dr["DuongDanThuNho"].ToString(),
                     LoaiKyNhan = dr["LoaiKyNhan"].ToString()
@@ -42,7 +42,7 @@ namespace QuanLyLogisticsApi.DAL
                 VALUES (@don, @up, @ngay, @anh, @thumb, @loai)", conn);
             cmd.Parameters.AddWithValue("@don", c.MaDon);
             cmd.Parameters.AddWithValue("@up", c.NguoiUpload);
-            cmd.Parameters.AddWithValue("@ngay", c.NgayUpload);
+            cmd.Parameters.AddWithValue("@ngay", c.NgayUpload ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@anh", c.KyNhan);
             cmd.Parameters.AddWithValue("@thumb", c.DuongDanThuNho);
             cmd.Parameters.AddWithValue("@loai", c.LoaiKyNhan);
