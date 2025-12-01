@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Hồ sơ khách hàng</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.profile-box {
+    max-width: 500px;
+    margin: auto;
+    margin-top: 40px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.profile-row { margin-bottom: 15px; }
+.profile-row label { font-weight: bold; }
+.profile-row input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 style="text-align:center">👤 Hồ sơ khách hàng</h2>
+
+<div class="profile-box">
+
+    <div class="profile-row">
+        <label>Tên đăng nhập:</label>
+        <input id="username" readonly>
+    </div>
+
+    <div class="profile-row">
+        <label>Họ tên:</label>
+        <input id="hoten">
+    </div>
+
+    <div class="profile-row">
+        <label>Số điện thoại:</label>
+        <input id="sdt">
+    </div>
+
+    <div class="profile-row">
+        <label>Email:</label>
+        <input id="email">
+    </div>
+
+    <button onclick="changePassword()">🔐 Đổi mật khẩu</button>
+    <a href="index.html" style="display:block; margin-top:20px; text-align:center;">⬅ Quay lại</a>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const u = getStoredUser();
+    if (!u) return location.href = "login.html";
+
+    // điền username & họ tên từ NguoiDung
+    document.getElementById("username").value = u.tenDangNhap;
+    document.getElementById("hoten").value = u.hoTen;
+
+    // Lấy thông tin KhachHang
+    const res = await fetch(`${API_BASE}/KhachHang/${u.maNguoiDung}`);
+    
+    if (res.ok) {
+        const kh = await res.json();
+        document.getElementById("sdt").value = kh.soDienThoai || "";
+        document.getElementById("email").value = kh.email || "";
+    }
+});
+
+async function changePassword() {
+    const u = getStoredUser();
+    const oldPass = prompt("Nhập mật khẩu cũ:");
+    const newPass = prompt("Nhập mật khẩu mới:");
+
+    if (!oldPass || !newPass) return;
+
+    const payload = {
+        MaNguoiDung: u.maNguoiDung,
+        MatKhauCu: oldPass,
+        MatKhauMoi: newPass
+    };
+
+    const res = await fetch(`${API_BASE}/NguoiDung/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("Đổi mật khẩu thành công!");
+    } else {
+        alert("Đổi mật khẩu thất bại");
+    }
+}
+
+</script>
+
+</body>
+</html>

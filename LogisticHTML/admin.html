@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Quản lý người dùng</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <div class="brand"><i class="fa-solid fa-user-shield"></i> Admin Panel</div>
+      <nav>
+        <button class="btn-ghost" onclick="goDashboard()">Bảng điều khiển</button>
+        <button class="btn-ghost" onclick="logout()">Đăng xuất</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="section">
+      <h2>Quản lý người dùng</h2>
+      <div class="crud-actions">
+        <input id="searchInput" placeholder="Nhập mã cần tìm..." />
+        <button class="btn-outline" onclick="onSearch()">🔍 Tìm kiếm</button>
+        <button class="btn-primary" onclick="loadUsers()">🔄 Làm mới</button>
+        <button class="btn-primary" onclick="onAdd('NguoiDung')">➕ Thêm</button>
+        <button id="btnEdit" class="btn-outline" onclick="onEdit()">✏️ Sửa</button>
+        <button id="btnDel" class="btn-danger" onclick="onDelete()">🗑️ Xóa</button>
+        <button id="btnExport" class="btn-outline" onclick="onExport()">📤 Xuất Excel</button>
+        <button id="btnImport" class="btn-outline" onclick="onImport()">📥 Import Excel</button>
+        <input type="file" id="excelInput" accept=".xlsx,.xls" style="display: none;">
+
+      </div>
+      <div id="dataTable" class="table-wrap">Chưa tải danh sách</div>
+
+      <div class="pagination">
+        <button onclick="prevPage()" class="page-btn">⬅</button>
+        <div id="pageNumbers" class="page-numbers"></div>
+        <button onclick="nextPage()" class="page-btn">➡</button>
+
+        <select id="pageSizeSelect" onchange="changePageSize()" class="page-size">
+          <option value="10">10 dòng</option>
+          <option value="20">20 dòng</option>
+          <option value="50">50 dòng</option>
+          <option value="100">100 dòng</option>
+        </select>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal reused from dashboard -->
+  <div id="modalForm" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle"></h3>
+      <form id="entityForm"></form>
+      <div class="modal-actions">
+        <button class="btn-primary" id="modalSave">Lưu</button>
+        <button class="btn-outline" id="modalCancel">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

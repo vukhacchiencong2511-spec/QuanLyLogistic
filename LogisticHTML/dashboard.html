@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — Logistics</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <div class="brand"><i class="fa-solid fa-chart-simple"></i> Dashboard</div>
+      <nav>
+        <span id="whoami" class="whoami"></span>
+        <button id="btnUserAdmin" class="btn-ghost hidden" onclick="window.location.href='admin.html'">
+    <i class="fa-solid fa-users-gear"></i> Quản lý người dùng
+  </button>
+        <button class="btn-ghost" onclick="logout()">Đăng xuất</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <aside class="sidebar">
+      <ul>
+        <li><button onclick="loadTable('VanDon')"><i class="fa-solid fa-box"></i> Vận đơn</button></li>
+        <li><button onclick="loadTable('DonVanChuyen')"><i class="fa-solid fa-truck"></i> Đơn vận chuyển</button></li>
+        <li><button onclick="loadTable('KhachHang')"><i class="fa-solid fa-user"></i> Khách hàng</button></li>
+        <li><button onclick="loadTable('DiaChi')"><i class="fa-solid fa-home"></i> Địa chỉ</button></li>
+        <li><button onclick="loadTable('DiemDung')"><i class="fa-solid fa-map-pin"></i> Điểm dừng</button></li>
+        <li><button onclick="loadTable('TuyenDuong')"><i class="fa-solid fa-road"></i> Tuyến đường</button></li>
+        <li><button onclick="loadTable('SuKienTrangThai')"><i class="fa-solid fa-clock"></i> Trạng thái</button></li>
+        <li><button onclick="loadTable('GiaoDichCOD')"><i class="fa-solid fa-money-bill-wave"></i> Giao dịch COD</button></li>
+        <li><button onclick="loadTable('ChungTu')"><i class="fa-solid fa-file-invoice"></i> Chứng từ</button></li>
+        <li><button onclick="loadTable('DonYeuCau')"><i class="fa-solid fa-file-invoice"></i> Đơn yêu cầu</button></li>
+      </ul>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-top">
+        <div class="panel-actions">
+          <input id="searchInput" placeholder="Nhập mã cần tìm..." />
+          <button class="btn-outline" onclick="onSearch()">🔍 Tìm kiếm</button>
+          <button class="btn-outline" onclick="onRefresh()">🔄 Làm mới</button>
+          <button id="btnAdd" class="btn-primary" onclick="onAdd()">➕ Thêm</button>
+          <button id="btnEdit" class="btn-outline" onclick="onEdit()">✏️ Sửa</button>
+          <button id="btnDel" class="btn-danger" onclick="onDelete()">🗑️ Xóa</button>
+          <button id="btnExport" class="btn-outline" onclick="onExport()">📤 Xuất Excel</button>
+          <button id="btnImport" class="btn-outline" onclick="onImport()">📥 Import Excel</button>
+          <input type="file" id="excelInput" accept=".xlsx,.xls" style="display: none;">
+        </div>
+        <div id="currentEntity" class="current-entity">Chưa chọn bảng</div>
+      </div>
+
+      <div id="dataTable" class="table-wrap">Chưa chọn bảng</div>
+      <div class="pagination">
+        <button onclick="prevPage()" class="page-btn">⬅</button>
+        <div id="pageNumbers" class="page-numbers"></div>
+        <button onclick="nextPage()" class="page-btn">➡</button>
+
+        <select id="pageSizeSelect" onchange="changePageSize()" class="page-size">
+          <option value="10">10 dòng</option>
+          <option value="20">20 dòng</option>
+          <option value="50">50 dòng</option>
+          <option value="100">100 dòng</option>
+        </select>
+      </div>
+    </section>
+  </main>
+
+  <!-- Generic modal for Add/Edit -->
+  <div id="modalForm" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle"></h3>
+      <form id="entityForm"></form>
+      <div class="modal-actions">
+        <button class="btn-primary" id="modalSave">Lưu</button>
+        <button class="btn-outline" id="modalCancel">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    // Hiển thị tên người dùng
+    const whoami = document.getElementById("whoami");
+    whoami.textContent = `👤 ${user.hoTen || user.tenDangNhap} (${user.maVaiTro || user.MaVaiTro})`;
+
+    // Kiểm tra vai trò Admin để hiện nút "Quản lý người dùng"
+    const role = user.maVaiTro || user.MaVaiTro || user.vaiTro || user.VaiTro;
+    if (role === "Admin" || role === 1) {
+      document.getElementById("btnUserAdmin").classList.remove("hidden");
+    }
+  }
+
+
+  // Đăng xuất
+  function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+  }
+</script>
+
+
+  <script src="app.js"></script>
+</body>
+</html>

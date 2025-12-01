@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Đăng nhập — Logistics Express</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="login-body">
+
+  <!-- FORM ĐĂNG NHẬP -->
+  <div id="loginCard" class="login-card">
+    <h2><i class="fa-solid fa-user-lock"></i> Đăng nhập hệ thống</h2>
+
+    <div class="input-row">
+      <i class="fa-solid fa-user"></i>
+      <input id="loginUsername" placeholder="Tên đăng nhập" />
+    </div>
+
+    <div class="input-row">
+      <i class="fa-solid fa-lock"></i>
+      <input id="loginPassword" type="password" placeholder="Mật khẩu" />
+    </div>
+
+    <div class="login-actions">
+      <button class="btn-primary" onclick="doLogin()">Đăng nhập</button>
+      <button class="btn-outline" onclick="toggleCustomerRegister()">Đăng ký</button>
+    </div>
+
+    <div id="loginMessage" class="message"></div>
+      <a href="index.html" class="small-link">← Về trang chủ</a>
+    </div>
+
+    </div> <!-- END loginCard -->
+
+<!-- FORM ĐĂNG KÝ KHÁCH HÀNG -->
+<div id="customerRegisterBlock" class="register-card hidden">
+
+    <h2><i class="fa-solid fa-user-plus"></i> Đăng ký</h2>
+
+      <div class="reg-row">
+        <input id="regUser" placeholder="Tên đăng nhập" />
+        <input id="regPass" type="password" placeholder="Mật khẩu" />
+      </div>
+
+      <div class="reg-row">
+        <input id="regHoTen" placeholder="Họ tên" />
+        <input id="regPhone" placeholder="Số điện thoại" />
+      </div>
+
+      <div class="reg-row">
+        <input id="regEmail" placeholder="Email" />
+      </div>
+
+    <button class="btn-primary" onclick="registerCustomer()">Tạo tài khoản</button>
+
+    <button class="btn-outline" onclick="toggleCustomerRegister()">← Quay về đăng nhập</button>
+</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
