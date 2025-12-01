@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyLogisticsApi.BUS;
 using QuanLyLogisticsApi.Models;
 using OfficeOpenXml;
@@ -71,6 +71,47 @@ namespace QuanLyLogisticsApi.Controllers
             return File(stream,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "DonYeuCau.xlsx");
+        }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest("Chưa chọn file.");
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var d = new DonYeuCau
+                {
+                    MaYeuCau = ws.Cells[i, 1].Text,
+                    TenNguoiGui = ws.Cells[i, 2].Text,
+                    SDTNguoiGui = ws.Cells[i, 3].Text,
+                    EmailNguoiGui = ws.Cells[i, 4].Text,
+                    DiaChiGui = ws.Cells[i, 5].Text,
+
+                    TenNguoiNhan = ws.Cells[i, 6].Text,
+                    SDTNguoiNhan = ws.Cells[i, 7].Text,
+                    EmailNguoiNhan = ws.Cells[i, 8].Text,
+                    DiaChiNhan = ws.Cells[i, 9].Text,
+
+                    LoaiHang = ws.Cells[i, 10].Text,
+                    KhoiLuong = decimal.TryParse(ws.Cells[i, 11].Text, out var kl) ? kl : 0,
+                    GiaTriKhaiBao = decimal.TryParse(ws.Cells[i, 12].Text, out var gt) ? gt : 0,
+
+                    GhiChu = ws.Cells[i, 13].Text,
+                    NgayTao = DateTime.TryParse(ws.Cells[i, 14].Text, out var nt) ? nt : DateTime.Now
+                };
+
+                _bus.Add(d);
+            }
+
+            return Ok("Import DonYeuCau thành công!");
         }
     }
 }
