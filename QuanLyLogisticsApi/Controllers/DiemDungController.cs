@@ -82,5 +82,34 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "DiemDung.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest();
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var d = new DiemDung
+                {
+                    MaDiemDung = ws.Cells[i, 1].Text,
+                    MaTuyen = ws.Cells[i, 2].Text,
+                    ThuTuDung = int.TryParse(ws.Cells[i, 3].Text, out var tt) ? tt : 0,
+                    MaDon = ws.Cells[i, 4].Text,
+                    DuKienDen = DateTime.TryParse(ws.Cells[i, 5].Text, out var dk) ? dk : null,
+                    ThucTeDen = DateTime.TryParse(ws.Cells[i, 6].Text, out var th) ? th : null
+                };
+                _bus.Add(d);
+            }
+
+            return Ok("Import thành công!");
+        }
     }
 }
