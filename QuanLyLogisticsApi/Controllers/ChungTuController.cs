@@ -85,5 +85,35 @@ namespace QuanLyLogisticsApi.Controllers
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               "ChungTu.xlsx");
         }
+
+        [HttpPost("import-excel")]
+        public IActionResult ImportExcel(IFormFile file)
+        {
+            if (file == null) return BadRequest("Chưa chọn file.");
+
+            using var st = new MemoryStream();
+            file.CopyTo(st);
+
+            using var pkg = new ExcelPackage(st);
+            var ws = pkg.Workbook.Worksheets[0];
+            int rows = ws.Dimension.Rows;
+
+            for (int i = 2; i <= rows; i++)
+            {
+                var ct = new ChungTu
+                {
+                    MaDon = ws.Cells[i, 2].Text,
+                    NguoiUpload = ws.Cells[i, 3].Text,
+                    NgayUpload = DateTime.TryParse(ws.Cells[i, 4].Text, out var d) ? d : null,
+                    KyNhan = ws.Cells[i, 5].Text,
+                    DuongDanThuNho = ws.Cells[i, 6].Text,
+                    LoaiKyNhan = ws.Cells[i, 7].Text
+                };
+
+                _bus.Add(ct);
+            }
+
+            return Ok("Import ChungTu thành công!");
+        }
     }
 }
